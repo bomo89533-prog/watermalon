@@ -1,6 +1,8 @@
 import streamlit as st
 import requests
 import base64
+from PIL import Image
+import io
 
 # ========== 页面设置 ==========
 st.set_page_config(page_title="无籽西瓜育种方案点评", page_icon="🍉")
@@ -8,7 +10,7 @@ st.title("🍉 无籽西瓜育种方案 · AI专家点评")
 st.caption("学生拍照上传手绘方案，AI育种专家即时点评优点与改进方向")
 
 # ========== 阿里云百炼配置 ==========
-API_KEY = "sk-3ca6530b7354447cac3327e5cf56aee8"
+API_KEY = "sk-你的真实百炼Key"  # ← 把这里换成你的阿里云百炼 API Key
 API_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
 
 SYSTEM_PROMPT = """你是一位拥有30年经验的西瓜育种专家，擅长无籽西瓜（三倍体育种）技术。
@@ -32,16 +34,40 @@ uploaded_file = st.file_uploader(
     help="点击后平板会自动打开相机，请确保方案文字清晰可见"
 )
 
+def compress_image(file_bytes, max_size=1024, quality=85):
+    """压缩图片：最长边不超过max_size，JPEG质量85%，返回bytes"""
+    img = Image.open(io.BytesIO(file_bytes))
+    
+    # 如果是RGBA模式，转成RGB（JPEG不支持透明）
+    if img.mode in ('RGBA', 'P'):
+        img = img.convert('RGB')
+    
+    # 等比例缩放
+    img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+    
+    # 保存为JPEG
+    buf = io.BytesIO()
+    img.save(buf, format='JPEG', quality=quality, optimize=True)
+    buf.seek(0)
+    return buf.read()
+
 if uploaded_file is not None:
+    # 显示原始预览
     st.image(uploaded_file, caption="方案预览", use_column_width=True)
+    
+    # 显示压缩信息
+    original_size = len(uploaded_file.getvalue()) / 1024
+    st.info(f"原始图片 {original_size:.0f} KB，已自动压缩后上传")
 
 # ========== 提交并获取点评 ==========
 if st.button("🚀 提交方案，获取专家点评") and uploaded_file and student_id:
-    # 图片转Base64
-    img_bytes = uploaded_file.getvalue()
-    img_b64 = base64.b64encode(img_bytes).decode()
-    mime = uploaded_file.type or "image/jpeg"
-    img_url = f"data:{mime};base64,{img_b64}"
+    # 压缩图片
+    raw_bytes = uploaded_file.getvalue()
+    compressed_bytes = compress_image(raw_bytes, max_size=1024, quality=85)
+    
+    # 转Base64
+    img_b64 = base64.b64encode(compressed_bytes).decode()
+    img_url = f"data:image/jpeg;base64,{img_b64}"
     
     # 构建用户消息
     user_content = [
@@ -50,7 +76,7 @@ if st.button("🚀 提交方案，获取专家点评") and uploaded_file and stu
     ]
     st.session_state.messages.append({"role": "user", "content": user_content})
     
-    # 调用阿里云百炼 API（通义千问视觉模型）
+    # 调用阿里云百炼 API（超时延长到120秒）
     with st.spinner("⏳ 专家正在分析你的方案，请稍候..."):
         try:
             resp = requests.post(
@@ -60,18 +86,20 @@ if st.button("🚀 提交方案，获取专家点评") and uploaded_file and stu
                     "Content-Type": "application/json"
                 },
                 json={
-                    "model": "qwen-vl-plus",  # 通义千问视觉模型，确定支持图片理解
+                    "model": "qwen-vl-plus",
                     "messages": st.session_state.messages,
                     "temperature": 0.6,
                     "max_tokens": 1500
                 },
-                timeout=60
+                timeout=120  # 超时延长到120秒
             )
             resp.raise_for_status()
             data = resp.json()
             reply = data["choices"][0]["message"]["content"]
             st.session_state.messages.append({"role": "assistant", "content": reply})
             st.success("点评完成！")
+        except requests.exceptions.Timeout:
+            st.error("⏱️ 请求超时：图片太大或网络较慢。建议：重新拍摄时让画面更简洁，或靠近WiFi路由器后重试。")
         except Exception as e:
             st.error(f"AI请求失败，请检查网络或联系老师: {e}")
 
@@ -100,7 +128,7 @@ if len(st.session_state.messages) > 1:
                         "temperature": 0.6,
                         "max_tokens": 1500
                     },
-                    timeout=60
+                    timeout=120
                 )
                 data = resp.json()
                 reply = data["choices"][0]["message"]["content"]
