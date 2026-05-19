@@ -109,7 +109,7 @@ html, body, [class*="css"] {
 
 # ========== 豆包（火山引擎方舟）配置 ==========
 API_KEY = "ark-56337a36-0306-47f2-b77e-fc67e7c8dd49-adebf"
-API_URL = "https://ark.cn-beijing.volces.com/api/v3"
+API_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
 
 # ========== 专家提示词 ==========
 SYSTEM_PROMPT = """你是一位高中生物教学助手，以西瓜育种专家的身份点评学生设计的无籽西瓜（三倍体）育种方案。
