@@ -294,6 +294,5 @@ if len(st.session_state.messages) > 1:
 st.markdown("""
 <div style="text-align:center;color:#94a3b8;font-size:0.75rem;margin-top:40px;padding-bottom:20px;">
     🔬 高中生物 · 染色体变异 · 多倍体育种实验室<br>
-    Powered by 豆包 Doubao Seed 2.0 Pro
 </div>
 """, unsafe_allow_html=True)
