@@ -5,92 +5,232 @@ from PIL import Image
 import io
 
 # ========== 页面设置 ==========
-st.set_page_config(page_title="无籽西瓜育种方案点评", page_icon="🍉", layout="centered")
+st.set_page_config(page_title="🧬 无籽西瓜育种方案 · AI实验室", page_icon="🧬", layout="centered")
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Noto Sans SC', sans-serif;
-    background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
-    color: #1e293b;
+    background: #f8fafc;
+    color: #0f172a;
 }
 
 .stApp {
-    background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.04) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 20%),
+        linear-gradient(180deg, #f0f9ff 0%, #f8fafc 50%, #ffffff 100%);
+    background-attachment: fixed;
 }
 
+/* 科技网格背景 */
+.stApp::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 标题样式 - 科技渐变 */
+h1 {
+    font-family: 'Orbitron', 'Noto Sans SC', sans-serif !important;
+    background: linear-gradient(135deg, #0891b2, #7c3aed, #db2777);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.5rem !important;
+    letter-spacing: 1px;
+    text-shadow: none !important;
+}
+
+.subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    letter-spacing: 2px;
+}
+
+/* 玻璃卡片 - 科技感 */
 .glass-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
     border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    position: relative;
+    overflow: hidden;
 }
 
+/* 卡片角落装饰 */
+.glass-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 40px; height: 40px;
+    border-top: 2px solid #06b6d4;
+    border-left: 2px solid #06b6d4;
+    border-radius: 16px 0 0 0;
+    opacity: 0.6;
+}
+
+.glass-card::after {
+    content: "";
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 40px; height: 40px;
+    border-bottom: 2px solid #8b5cf6;
+    border-right: 2px solid #8b5cf6;
+    border-radius: 0 0 16px 0;
+    opacity: 0.6;
+}
+
+/* 发光边框卡片 */
 .glow-border {
-    border: 1px solid #06b6d4;
-    box-shadow: 0 0 12px rgba(6, 182, 212, 0.12);
+    border: 1px solid rgba(6, 182, 212, 0.4);
+    box-shadow: 
+        0 0 20px rgba(6, 182, 212, 0.1),
+        0 4px 20px rgba(0, 0, 0, 0.06),
+        inset 0 0 20px rgba(6, 182, 212, 0.03);
 }
 
+/* 扫描线动画 */
+.scan-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+    opacity: 0.6;
+    animation: scan 3s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes scan {
+    0% { top: 0; opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { top: 100%; opacity: 0; }
+}
+
+/* 按钮 - 科技发光 */
 .stButton button {
-    background: linear-gradient(90deg, #0891b2, #2563eb) !important;
+    background: linear-gradient(135deg, #0891b2, #2563eb, #7c3aed) !important;
+    background-size: 200% 200% !important;
     color: white !important;
     border: none !important;
-    border-radius: 10px !important;
-    padding: 14px 24px !important;
+    border-radius: 12px !important;
+    padding: 16px 28px !important;
     font-weight: 700 !important;
-    font-size: 1.05rem !important;
+    font-size: 1.1rem !important;
     width: 100% !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.25) !important;
+    letter-spacing: 1px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3) !important;
+    position: relative;
+    overflow: hidden;
 }
 
 .stButton button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(8, 145, 178, 0.35) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(37, 99, 235, 0.5) !important;
+    background-position: right center !important;
 }
 
+/* 按钮闪光效果 */
+.stButton button::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
+    transform: rotate(45deg);
+    transition: all 0.5s;
+}
+
+.stButton button:hover::after {
+    left: 100%;
+}
+
+/* 文件上传器 - 科技虚线框 */
 .stFileUploader {
-    background: #f8fafc !important;
-    border: 2px dashed #06b6d4 !important;
-    border-radius: 12px !important;
-    padding: 24px !important;
+    background: rgba(248, 250, 252, 0.8) !important;
+    border: 2px dashed rgba(6, 182, 212, 0.5) !important;
+    border-radius: 14px !important;
+    padding: 32px 24px !important;
+    transition: all 0.3s ease !important;
 }
 
 .stFileUploader:hover {
     border-color: #0891b2 !important;
-    background: #f0f9ff !important;
+    background: rgba(240, 249, 255, 0.9) !important;
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.15) !important;
 }
 
+/* 聊天消息 */
 .stChatMessage {
-    background: #ffffff !important;
-    border-radius: 12px !important;
-    border: 1px solid #e2e8f0 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
 }
 
 [data-testid="stChatMessageAvatar"] {
-    background: linear-gradient(135deg, #06b6d4, #2563eb) !important;
+    background: linear-gradient(135deg, #0891b2, #7c3aed) !important;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3) !important;
 }
 
+/* 成功提示 */
 .success-box {
-    background: #ecfdf5;
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
     border-left: 4px solid #10b981;
-    border-radius: 8px;
-    padding: 14px 16px;
-    margin: 12px 0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
     color: #064e3b;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
 }
 
+/* 分隔线 */
 .divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent, #cbd5e1, transparent);
-    margin: 20px 0;
+    background: linear-gradient(90deg, transparent, #06b6d4, #8b5cf6, transparent);
+    margin: 24px 0;
+    opacity: 0.4;
 }
 
+/* 状态标签 */
+.status-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #e0f2fe, #ddd6fe);
+    color: #0369a1;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+/* 修复文件上传器文字 */
 .stFileUploader span, .stFileUploader small, .stFileUploader div {
     color: #475569 !important;
 }
@@ -103,6 +243,20 @@ html, body, [class*="css"] {
     background: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
     color: #0f172a !important;
+    border-radius: 10px !important;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #06b6d4, #8b5cf6);
+    border-radius: 4px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -161,9 +315,20 @@ SYSTEM_PROMPT = """你是一位高中生物教学助手，以西瓜育种专家�
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
-# ========== 图片上传（页面最顶部，无标题） ==========
+# ========== 科技标题 ==========
+st.markdown("""
+<div style="text-align:center;margin-bottom:8px;">
+    <span style="font-size:2.5rem;">🧬</span>
+</div>
+""", unsafe_allow_html=True)
+st.markdown('<h1>无籽西瓜育种方案 · AI实验室</h1>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">◆ 上传手绘育种流程图 · 启动智能诊断系统 ◆</div>', unsafe_allow_html=True)
+
+# ========== 图片上传 ==========
 with st.container():
-    st.markdown('<div class="glass-card glow-border">', unsafe_allow_html=True)
+    st.markdown('<div class="glass-card glow-border" style="position:relative;">', unsafe_allow_html=True)
+    st.markdown('<div class="scan-line"></div>', unsafe_allow_html=True)
+    
     uploaded_file = st.file_uploader(
         "📷 拍照或选择图片上传育种方案", 
         type=["jpg", "jpeg", "png"],
@@ -176,8 +341,9 @@ with st.container():
             st.image(uploaded_file, caption="📋 方案预览", use_column_width=True)
         with col2:
             raw_size = len(uploaded_file.getvalue()) / 1024
-            st.markdown(f'<div style="color:#64748b;font-size:0.85rem;">原始大小<br><span style="color:#0891b2;font-size:1.2rem;font-weight:700;">{raw_size:.0f} KB</span></div>', unsafe_allow_html=True)
-            st.markdown('<div style="color:#64748b;font-size:0.75rem;margin-top:8px;">已自动压缩<br>优化上传</div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="color:#64748b;font-size:0.85rem;margin-top:10px;">原始大小</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="status-badge">{raw_size:.0f} KB</div>', unsafe_allow_html=True)
+            st.markdown('<div style="color:#94a3b8;font-size:0.75rem;margin-top:12px;">✓ 已自动压缩优化</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ========== 图片压缩函数 ==========
@@ -193,8 +359,8 @@ def compress_image(file_bytes, max_size=1200, quality=85):
 
 # ========== 提交按钮 ==========
 with st.container():
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    submit_btn = st.button("🚀 提交方案，启动 AI 诊断")
+    st.markdown('<div class="glass-card" style="text-align:center;">', unsafe_allow_html=True)
+    submit_btn = st.button("🚀 启动 AI 诊断系统")
     st.markdown('</div>', unsafe_allow_html=True)
 
 if submit_btn:
@@ -262,7 +428,7 @@ for msg in st.session_state.messages:
 # ========== 继续追问 ==========
 if len(st.session_state.messages) > 1:
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-    st.markdown('<div style="color:#475569;font-size:0.9rem;margin-bottom:8px;">💬 对点评有疑问？继续向专家提问</div>', unsafe_allow_html=True)
+    st.markdown('<div style="color:#475569;font-size:0.9rem;margin-bottom:8px;text-align:center;">💬 对点评有疑问？继续向专家提问</div>', unsafe_allow_html=True)
     
     question = st.chat_input("输入你的问题...")
     if question:
@@ -289,10 +455,3 @@ if len(st.session_state.messages) > 1:
                 st.rerun()
             except Exception as e:
                 st.error(f"❌ 请求失败: {e}")
-
-# ========== 底部装饰 ==========
-st.markdown("""
-<div style="text-align:center;color:#94a3b8;font-size:0.75rem;margin-top:40px;padding-bottom:20px;">
-    🔬 高中生物 · 染色体变异 · 多倍体育种实验室<br>
-</div>
-""", unsafe_allow_html=True)
