@@ -10,7 +10,7 @@ st.title("🍉 无籽西瓜育种方案 · AI专家点评")
 st.caption("学生拍照上传手绘方案，AI育种专家即时点评优点与改进方向")
 
 # ========== 阿里云百炼配置 ==========
-API_KEY = "sk-你的真实百炼Key"  # ← 把这里换成你的阿里云百炼 API Key
+API_KEY = "sk-3ca6530b7354447cac3327e5cf56aee8"  # ← 把这里换成你的阿里云百炼 API Key
 API_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
 
 SYSTEM_PROMPT = """你是一位拥有30年经验的西瓜育种专家，擅长无籽西瓜（三倍体育种）技术。
