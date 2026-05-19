@@ -227,10 +227,10 @@ if submit_btn:
                         "Content-Type": "application/json"
                     },
                     json={
-                        "model": "doubao-seed-2-0-lite-260215",
+                        "model": "doubao-seed-2-0-pro-260215",
                         "messages": st.session_state.messages,
                         "temperature": 0.4,
-                        "max_tokens": 2000
+                        "max_tokens": 4000
                     },
                     timeout=120
                 )
@@ -276,10 +276,10 @@ if len(st.session_state.messages) > 1:
                         "Content-Type": "application/json"
                     },
                     json={
-                        "model": "doubao-seed-2-0-lite-260215",
+                        "model": "doubao-seed-2-0-pro-260215",
                         "messages": st.session_state.messages,
                         "temperature": 0.4,
-                        "max_tokens": 2000
+                        "max_tokens": 4000
                     },
                     timeout=120
                 )
@@ -294,6 +294,6 @@ if len(st.session_state.messages) > 1:
 st.markdown("""
 <div style="text-align:center;color:#94a3b8;font-size:0.75rem;margin-top:40px;padding-bottom:20px;">
     🔬 高中生物 · 染色体变异 · 多倍体育种实验室<br>
-    Powered by 豆包 Doubao Seed 2.0 Lite
+    Powered by 豆包 Doubao Seed 2.0 Pro
 </div>
 """, unsafe_allow_html=True)
