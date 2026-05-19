@@ -6,7 +6,7 @@ st.set_page_config(page_title="无籽西瓜育种方案点评", page_icon="🍉"
 st.title("🍉 无籽西瓜育种方案 · AI专家点评")
 st.caption("学生拍照上传手绘方案，AI育种专家即时点评优点与改进方向")
 
-API_KEY = st.secrets.get("MOONSHOT_API_KEY", "")
+API_KEY = "sk-TBFPttPpUlYeUfGKoCl3RBQxy5b9GumojZIyF0Cq2USplnvs"
 API_URL = "https://api.moonshot.cn/v1/chat/completions"
 
 SYSTEM_PROMPT = """你是一位拥有30年经验的西瓜育种专家，擅长无籽西瓜（三倍体育种）技术。
