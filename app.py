@@ -127,10 +127,11 @@ h1 {
     color: #0891b2 !important;
 }
 
-/* 隐藏多余上下padding */
+/* 增加顶部留白，避免被浏览器地址栏/系统栏遮挡 */
 .block-container {
-    padding-top: 1rem !important;
+    padding-top: 4rem !important;
     padding-bottom: 1rem !important;
+    max-width: 720px !important;
 }
 
 /* 西瓜装饰 */
