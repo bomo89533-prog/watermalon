@@ -51,7 +51,7 @@ if st.button("🚀 提交方案，获取专家点评") and uploaded_file and stu
                     "Content-Type": "application/json"
                 },
                 json={
-                    "model": "kimi-latest",
+                    "model": "kimi-k2.6",
                     "messages": st.session_state.messages,
                     "temperature": 0.6,
                     "max_tokens": 1500
@@ -84,7 +84,7 @@ if len(st.session_state.messages) > 1:
                         "Content-Type": "application/json"
                     },
                     json={
-                        "model": "kimi-latest",
+                        "model": "kimi-k2.6",
                         "messages": st.session_state.messages,
                         "temperature": 0.6,
                         "max_tokens": 1500
